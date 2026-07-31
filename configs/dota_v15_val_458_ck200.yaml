@@ -1,0 +1,57 @@
+experiment:
+  name: dota_v15_val_458_ck200
+  seed: 42
+  output_dir: outputs/dota_v15_val_458
+
+dataset:
+  name: dota_v1_5
+  root: /data/rsdata/DOTA-v1.5/DOTA_V1.5
+  split: val
+  image_dir: images
+  annotation_dir: labelTxt-v1.5/DOTA-v1.5_val
+  include_ids_file: splits/dota_v15_test_val_458.txt
+  include_difficult: true
+  classes:
+    - plane
+    - ship
+    - storage-tank
+    - baseball-diamond
+    - tennis-court
+    - basketball-court
+    - ground-track-field
+    - harbor
+    - bridge
+    - large-vehicle
+    - small-vehicle
+    - helicopter
+    - roundabout
+    - soccer-ball-field
+    - swimming-pool
+    - container-crane
+
+queries:
+  templates:
+    - "Locate image patches containing {class_phrase}."
+    - "Find regions that show {class_phrase}."
+    - "Retrieve local areas containing {class_phrase}."
+    - "Which image regions contain {class_phrase}?"
+  min_objects_per_query: 1
+
+tiling:
+  patch_sizes: [512, 1024]
+  overlap: 0.25
+  min_valid_ratio: 0.25
+  min_object_coverage: 0.3
+  object_coverage_geometry: polygon
+
+retrieval:
+  encoder: open_clip
+  output_name: retrieval_openclip_ck200
+  model_name: ViT-B-32
+  pretrained: openai
+  batch_size: 128
+  candidate_k: 200
+  top_k: 10
+  device: cuda
+  cache_features: true
+  cache_dir: features

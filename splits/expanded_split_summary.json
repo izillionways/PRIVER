@@ -1,0 +1,53 @@
+{
+  "protocol": {
+    "development": "All 1,411 DOTA-v1.5 train source images",
+    "internal_test": "All 458 DOTA-v1.5 validation source images",
+    "external_pilot": "Previously used first 50 SODA-A validation source images",
+    "external_holdout": "Remaining 526 SODA-A validation source images",
+    "untouched_reserve": "All 870 SODA-A test source images",
+    "unit_of_separation": "source image"
+  },
+  "manifests": {
+    "dota_v15_dev_train_1411": {
+      "path": "splits/dota_v15_dev_train_1411.txt",
+      "count": 1411,
+      "sha256": "f99956a5484b8f2a6bec81d21bdb7b65f15923b38bc589b9fd34cc7ecc098541",
+      "first_id": "P0000",
+      "last_id": "P2805"
+    },
+    "dota_v15_test_val_458": {
+      "path": "splits/dota_v15_test_val_458.txt",
+      "count": 458,
+      "sha256": "a7efa6db8893e1ccc05baa0a44528b720b08cdc55f7221f3e3be7a9a08db5048",
+      "first_id": "P0003",
+      "last_id": "P2802"
+    },
+    "soda_a_val_pilot_50": {
+      "path": "splits/soda_a_val_pilot_50.txt",
+      "count": 50,
+      "sha256": "b4949c8c3e657ec9065986fbf98070a69ed353fb1781d27da7a5473bb7329c53",
+      "first_id": "00012",
+      "last_id": "00247"
+    },
+    "soda_a_test_reserve_870": {
+      "path": "splits/soda_a_test_reserve_870.txt",
+      "count": 870,
+      "sha256": "14d1fa05899c3d95dd6a33ff200f3f338be483caa4bf1e56c69ae2128d317e16",
+      "first_id": "00002",
+      "last_id": "02509"
+    },
+    "soda_a_val_holdout_526": {
+      "path": "splits/soda_a_val_holdout_526.txt",
+      "count": 526,
+      "sha256": "00152c8a4579890af916984b461bc9b65278eae2ab40e01469e9a4c6924ad3c4",
+      "first_id": "00249",
+      "last_id": "02513"
+    }
+  },
+  "checks": {
+    "dota_development_test_overlap": 0,
+    "soda_pilot_holdout_overlap": 0,
+    "soda_validation_test_overlap": 0,
+    "soda_pilot_plus_holdout_equals_validation": true
+  }
+}

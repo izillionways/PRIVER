@@ -1,0 +1,51 @@
+experiment:
+  name: soda_a_val_holdout_526_ck200
+  seed: 42
+  output_dir: outputs/soda_a_val_holdout_526
+
+dataset:
+  name: soda_a
+  root: /data/rsdata/SODA-A
+  split: val
+  image_dir: Images/Images
+  annotation_dir: Annotations/val
+  include_ids_file: splits/soda_a_val_holdout_526.txt
+  ignored_classes:
+    - ignore
+  classes:
+    - airplane
+    - helicopter
+    - small-vehicle
+    - large-vehicle
+    - ship
+    - container
+    - storage-tank
+    - swimming-pool
+    - windmill
+
+queries:
+  templates:
+    - "Locate image patches containing {class_phrase}."
+    - "Find regions that show {class_phrase}."
+    - "Retrieve local areas containing {class_phrase}."
+    - "Which image regions contain {class_phrase}?"
+  min_objects_per_query: 1
+
+tiling:
+  patch_sizes: [512, 1024]
+  overlap: 0.25
+  min_valid_ratio: 0.25
+  min_object_coverage: 0.3
+  object_coverage_geometry: polygon
+
+retrieval:
+  encoder: open_clip
+  output_name: retrieval_openclip_ck200
+  model_name: ViT-B-32
+  pretrained: openai
+  batch_size: 128
+  candidate_k: 200
+  top_k: 10
+  device: cuda
+  cache_features: true
+  cache_dir: features

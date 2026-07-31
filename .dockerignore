@@ -1,0 +1,15 @@
+.git
+.env
+.venv
+.cache
+.pytest_cache
+__pycache__
+outputs
+features
+checkpoints
+weights
+*.pt
+*.pth
+*.ckpt
+*.npz
+*.npy

@@ -1,0 +1,41 @@
+{
+  "method": "PRIVER",
+  "full_name": "Prompt-Stable Reciprocal Inter-scale Visual Evidence Reranking",
+  "selection_protocol": {
+    "development_split": "DOTA-v1.5 train development set",
+    "selection_metric": "precision_at_10",
+    "test_sets_not_used_for_selection": true
+  },
+  "prompt_scoring": {
+    "templates": [
+      "Locate image patches containing {class_phrase}.",
+      "Find regions that show {class_phrase}.",
+      "Retrieve local areas containing {class_phrase}.",
+      "Which image regions contain {class_phrase}?"
+    ],
+    "aggregation": "mean_minus_standard_deviation",
+    "standard_deviation_weight": 0.5
+  },
+  "candidate_k": 100,
+  "top_k": 10,
+  "same_scale_support": {
+    "kernel": "iom",
+    "aggregation": "top_m",
+    "top_m": 3,
+    "supporter_floor": 0.25,
+    "score_weight": "normalized"
+  },
+  "inter_scale_support": {
+    "kernel": "iom",
+    "aggregation": "top_m",
+    "top_m": 8,
+    "supporter_floor": 0.25,
+    "score_weight": "normalized",
+    "reciprocal_k": 12,
+    "row_degree_power": 0.5,
+    "column_degree_power": 0.5,
+    "consensus": "additive"
+  },
+  "same_scale_weight": 0.25,
+  "inter_scale_weight": 1.0
+}

@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the associated article and this repository."
+title: "PRIVER: Prompt-Stable Reciprocal Inter-scale Visual Evidence Reranking"
+type: software
+version: 0.1.0
+repository-code: "https://github.com/izillionways/PRIVER"
+authors:
+  - family-names: Shen
+    given-names: Zhengwei
+    email: zwshen@zju.edu.cn
+    orcid: "https://orcid.org/0000-0001-7816-5081"
+abstract: >-
+  A training-free method for reranking within-image evidence patches in
+  high-resolution remote-sensing imagery using prompt stability,
+  same-scale spatial support, and reciprocal inter-scale support.
+keywords:
+  - remote sensing
+  - vision-language retrieval
+  - patch retrieval
+  - reranking
