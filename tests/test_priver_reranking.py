@@ -1,6 +1,7 @@
 from priver.reranking import (
     InterScaleSupportSpec,
     SameScaleSupportSpec,
+    build_candidate_context,
     rerank_candidates,
 )
 
@@ -69,3 +70,31 @@ def test_tied_semantic_candidates_retain_input_order_without_support() -> None:
     )
 
     assert [item["patch_id"] for item in ranked] == ["first", "second"]
+
+
+def test_candidate_scores_are_clipped_before_minmax_normalization() -> None:
+    candidates = [
+        {
+            "patch_id": "negative",
+            "score": -0.2,
+            "bbox": [0, 0, 512, 512],
+            "patch_size": 512,
+        },
+        {
+            "patch_id": "zero",
+            "score": 0.0,
+            "bbox": [600, 0, 1112, 512],
+            "patch_size": 512,
+        },
+        {
+            "patch_id": "positive",
+            "score": 0.4,
+            "bbox": [1200, 0, 1712, 512],
+            "patch_size": 512,
+        },
+    ]
+
+    context = build_candidate_context(candidates)
+
+    assert context.clipped_scores.tolist() == [0.0, 0.0, 0.4]
+    assert context.base.tolist() == [0.0, 0.0, 1.0]

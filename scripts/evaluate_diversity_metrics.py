@@ -9,7 +9,6 @@ from pathlib import Path
 
 import numpy as np
 
-from priver.baselines import rerank_consistency_baseline
 from priver.consistency import build_positive_patch_map
 from priver.geometry import box_area, intersection_area
 from priver.io import read_jsonl
@@ -21,30 +20,17 @@ def parse_args() -> argparse.Namespace:
         description="Evaluate ranking quality, unique-object coverage, and semantic NMS baselines."
     )
     parser.add_argument("--output-dir", required=True, help="Dataset output directory.")
-    parser.add_argument("--retrieval-dir", required=True, help="Retrieval directory with Top-N candidates.")
+    parser.add_argument(
+        "--semantic-dir",
+        required=True,
+        help="Semantic retrieval directory containing the Top-N candidate pool.",
+    )
+    parser.add_argument(
+        "--priver-dir",
+        required=True,
+        help="PRIVER directory containing the saved final rankings.",
+    )
     parser.add_argument("--result-dir", required=True, help="Directory for supplementary evaluation outputs.")
-    parser.add_argument(
-        "--reranked-dir",
-        default=None,
-        help=(
-            "Optional directory containing saved proposed-method rankings. "
-            "When supplied, these rankings replace the built-in consistency reranker."
-        ),
-    )
-    parser.add_argument("--alpha", type=float, default=1.5)
-    parser.add_argument("--beta", type=float, default=0.3)
-    parser.add_argument("--gamma", type=float, default=0.5)
-    parser.add_argument(
-        "--rerank-mode",
-        choices=("full", "adaptive"),
-        default="adaptive",
-        help="Consistency reranking mode used for the proposed method.",
-    )
-    parser.add_argument(
-        "--method-name",
-        default="adaptive",
-        help="Method label written to result tables.",
-    )
     parser.add_argument(
         "--candidate-k",
         type=int,
@@ -151,7 +137,7 @@ def paired_cluster_bootstrap(
     metric: str,
     n_bootstrap: int,
     seed: int,
-    method_name: str = "adaptive",
+    method_name: str = "priver",
 ) -> dict:
     baseline_by_query = {row["query_id"]: row for row in baseline_rows}
     method_by_query = {row["query_id"]: row for row in method_rows}
@@ -206,17 +192,14 @@ def paired_cluster_bootstrap(
 def main() -> None:
     args = parse_args()
     output_dir = Path(args.output_dir)
-    retrieval_dir = Path(args.retrieval_dir)
+    semantic_dir = Path(args.semantic_dir)
+    priver_dir = Path(args.priver_dir)
     result_dir = Path(args.result_dir)
     result_dir.mkdir(parents=True, exist_ok=True)
-    reranked_by_query = None
-    if args.reranked_dir:
-        reranked_by_query = {
-            row["query"]["query_id"]: row["retrieved"]
-            for row in read_jsonl(
-                Path(args.reranked_dir) / "retrieval_results.jsonl"
-            )
-        }
+    priver_by_query = {
+        row["query"]["query_id"]: row["retrieved"]
+        for row in read_jsonl(priver_dir / "retrieval_results.jsonl")
+    }
 
     patch_rows = read_jsonl(output_dir / "patch_index.jsonl")
     positive_patch_map = build_positive_patch_map(patch_rows)
@@ -226,12 +209,12 @@ def main() -> None:
         patch_objects[link["patch_id"]].add(link["object_id"])
 
     thresholds = [float(value) for value in args.nms_thresholds.split(",")]
-    methods = ["semantic", args.method_name] + [
+    methods = ["semantic", "priver"] + [
         f"semantic_nms_{value:g}" for value in thresholds
     ]
     per_query: dict[str, list[dict]] = {method: [] for method in methods}
 
-    for row in read_jsonl(retrieval_dir / "retrieval_results.jsonl"):
+    for row in read_jsonl(semantic_dir / "retrieval_results.jsonl"):
         query = row["query"]
         candidates = (
             row["retrieved"][: args.candidate_k]
@@ -242,19 +225,13 @@ def main() -> None:
             (query["image_id"], query["class_name"]), set()
         )
 
-        if reranked_by_query is None:
-            proposed = rerank_consistency_baseline(
-                candidates,
-                mode=args.rerank_mode,
-                alpha=args.alpha,
-                beta=args.beta,
-                gamma=args.gamma,
-            )[: args.top_k]
-        else:
-            proposed = reranked_by_query[query["query_id"]][: args.top_k]
+        query_id = query["query_id"]
+        if query_id not in priver_by_query:
+            raise KeyError(f"Missing PRIVER ranking for query {query_id}")
+        proposed = priver_by_query[query_id][: args.top_k]
         rankings = {
             "semantic": candidates[: args.top_k],
-            args.method_name: proposed,
+            "priver": proposed,
         }
         for threshold in thresholds:
             rankings[f"semantic_nms_{threshold:g}"] = semantic_nms(
@@ -284,8 +261,8 @@ def main() -> None:
     bootstrap_rows = [
         paired_cluster_bootstrap(
             per_query["semantic"],
-            per_query[args.method_name],
-            method_name=args.method_name,
+            per_query["priver"],
+            method_name="priver",
             metric=metric,
             n_bootstrap=args.n_bootstrap,
             seed=args.seed,
@@ -301,12 +278,8 @@ def main() -> None:
             {
                 "candidate_k": args.candidate_k,
                 "top_k": args.top_k,
-                "reranked_dir": args.reranked_dir,
-                "rerank_mode": args.rerank_mode,
-                "method_name": args.method_name,
-                "alpha": args.alpha,
-                "beta": args.beta,
-                "gamma": args.gamma,
+                "semantic_dir": str(semantic_dir),
+                "priver_dir": str(priver_dir),
                 "nms_thresholds": thresholds,
                 "n_bootstrap": args.n_bootstrap,
                 "seed": args.seed,

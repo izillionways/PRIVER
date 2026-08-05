@@ -30,7 +30,7 @@ RUN python3 -m pip install \
 
 RUN python3 -m pip install -r /tmp/requirements.txt
 
-COPY pyproject.toml README.md /tmp/priver/
+COPY pyproject.toml README.md LICENSE /tmp/priver/
 COPY src /tmp/priver/src
 RUN python3 -m pip install --no-deps /tmp/priver
 

@@ -83,7 +83,7 @@ class InterScaleSupportSpec:
 @dataclass(frozen=True)
 class CandidateContext:
     base: np.ndarray
-    raw_scores: np.ndarray
+    clipped_scores: np.ndarray
     iou: np.ndarray
     iom: np.ndarray
     same_scale_mask: np.ndarray
@@ -98,7 +98,7 @@ def build_candidate_context(candidates: list[dict[str, Any]]) -> CandidateContex
         empty_mask = np.empty((0, 0), dtype=bool)
         return CandidateContext(
             base=empty,
-            raw_scores=empty,
+            clipped_scores=empty,
             iou=empty_matrix,
             iom=empty_matrix,
             same_scale_mask=empty_mask,
@@ -112,11 +112,11 @@ def build_candidate_context(candidates: list[dict[str, Any]]) -> CandidateContex
         [int(candidate["patch_size"]) for candidate in candidates],
         dtype=int,
     )
-    raw_scores = np.maximum(
+    clipped_scores = np.maximum(
         0.0,
         np.asarray([float(candidate["score"]) for candidate in candidates]),
     )
-    base = np.asarray(normalize(raw_scores.tolist()), dtype=float)
+    base = np.asarray(normalize(clipped_scores.tolist()), dtype=float)
 
     left = np.maximum(boxes[:, None, 0], boxes[None, :, 0])
     top = np.maximum(boxes[:, None, 1], boxes[None, :, 1])
@@ -150,7 +150,7 @@ def build_candidate_context(candidates: list[dict[str, Any]]) -> CandidateContex
     inter_scale_mask = patch_sizes[:, None] != patch_sizes[None, :]
     return CandidateContext(
         base=base,
-        raw_scores=raw_scores,
+        clipped_scores=clipped_scores,
         iou=iou,
         iom=iom,
         same_scale_mask=same_scale_mask,
@@ -168,7 +168,7 @@ def _overlap_matrix(context: CandidateContext, kernel: str) -> np.ndarray:
 
 def _score_weights(context: CandidateContext, mode: str) -> np.ndarray:
     if mode == "raw":
-        return context.raw_scores
+        return context.clipped_scores
     if mode == "normalized":
         return context.base
     if mode == "sqrt_normalized":

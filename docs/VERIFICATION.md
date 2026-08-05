@@ -1,12 +1,11 @@
 # Verification Record
 
-Verification was performed on 2026-07-31 before repository
-initialization.
+Verification was repeated on 2026-08-06 before public release.
 
 ## Automated Checks
 
 - Unit tests: 32 passed.
-- Static syntax check: 53 Python files parsed successfully.
+- Static syntax check: 49 Python files parsed successfully.
 - Docker Compose: configuration resolved successfully with a placeholder
   dataset root.
 - Synthetic smoke example: completed successfully.

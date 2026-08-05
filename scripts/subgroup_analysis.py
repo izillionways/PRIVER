@@ -25,16 +25,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--config", required=True, help="Path to YAML config.")
     parser.add_argument(
         "--baseline-dir",
-        default=None,
-        help="Baseline retrieval directory. Defaults to output_dir/retrieval_openclip.",
+        required=True,
+        help="Semantic-baseline retrieval directory.",
     )
     parser.add_argument(
-        "--method-dir",
-        default=None,
-        help="Comparison retrieval directory. Defaults to output_dir/retrieval_openclip/consistency_rerank/full.",
+        "--priver-dir",
+        required=True,
+        help="PRIVER retrieval directory.",
     )
-    parser.add_argument("--baseline-name", default="openclip", help="Name for the baseline method.")
-    parser.add_argument("--method-name", default="consistency_full", help="Name for the comparison method.")
     parser.add_argument(
         "--analysis-dir",
         default=None,
@@ -139,26 +137,22 @@ def main() -> None:
     args = parse_args()
     cfg = read_yaml(args.config)
     out_dir = Path(cfg["experiment"]["output_dir"])
-    baseline_dir = Path(args.baseline_dir) if args.baseline_dir else out_dir / "retrieval_openclip"
-    method_dir = (
-        Path(args.method_dir)
-        if args.method_dir
-        else out_dir / "retrieval_openclip" / "consistency_rerank" / "full"
-    )
+    baseline_dir = Path(args.baseline_dir)
+    priver_dir = Path(args.priver_dir)
     analysis_dir = ensure_dir(
         Path(args.analysis_dir)
         if args.analysis_dir
-        else method_dir / "subgroup_analysis"
+        else priver_dir / "subgroup_analysis"
     )
 
     attrs = query_attributes(out_dir)
-    baseline = load_metrics(baseline_dir, args.baseline_name)
-    method = load_metrics(method_dir, args.method_name)
+    baseline = load_metrics(baseline_dir, "semantic")
+    method = load_metrics(priver_dir, "priver")
     df = pd.concat([baseline, method], ignore_index=True).merge(attrs, on=["query_id", "class_name"], how="left")
 
     summaries = []
     for group_col in ["class_name", "size_bin", "density_bin"]:
-        summary = summarize_group(df, group_col, args.baseline_name)
+        summary = summarize_group(df, group_col, "semantic")
         summary.to_csv(analysis_dir / f"by_{group_col}.csv", index=False)
         summaries.append(summary)
 
@@ -166,21 +160,21 @@ def main() -> None:
     all_groups.to_csv(analysis_dir / "subgroup_summary.csv", index=False)
     summary = {
         "baseline_dir": str(baseline_dir),
-        "method_dir": str(method_dir),
+        "priver_dir": str(priver_dir),
         "num_queries": int(attrs["query_id"].nunique()),
         "best_precision_at_10_gains": top_changes(
             df,
             "class_name",
             "precision_at_10",
-            args.baseline_name,
-            args.method_name,
+            "semantic",
+            "priver",
         ),
         "best_hit_at_1_gains": top_changes(
             df,
             "class_name",
             "hit_at_1",
-            args.baseline_name,
-            args.method_name,
+            "semantic",
+            "priver",
         ),
     }
     (analysis_dir / "summary.json").write_text(

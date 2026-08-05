@@ -25,23 +25,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--config", required=True, help="Path to YAML config.")
     parser.add_argument(
         "--baseline-dir",
-        default=None,
-        help="Baseline retrieval directory. Defaults to output_dir/retrieval_openclip.",
+        required=True,
+        help="Semantic-baseline retrieval directory.",
     )
     parser.add_argument(
-        "--method-dirs",
-        default=None,
-        help="Comma-separated method directories to compare.",
-    )
-    parser.add_argument(
-        "--method-names",
-        default=None,
-        help="Comma-separated method names matching --method-dirs.",
-    )
-    parser.add_argument(
-        "--baseline-name",
-        default="openclip",
-        help="Name assigned to the baseline metrics in output tables.",
+        "--priver-dir",
+        required=True,
+        help="PRIVER retrieval directory.",
     )
     parser.add_argument(
         "--analysis-subdir",
@@ -49,12 +39,6 @@ def parse_args() -> argparse.Namespace:
         help="Output subdirectory under experiment.output_dir.",
     )
     return parser.parse_args()
-
-
-def split_csv(raw: str | None) -> list[str]:
-    if raw is None:
-        return []
-    return [item.strip() for item in raw.split(",") if item.strip()]
 
 
 def load_metrics(path: Path, method: str) -> pd.DataFrame:
@@ -135,22 +119,14 @@ def main() -> None:
     args = parse_args()
     cfg = read_yaml(args.config)
     out_dir = Path(cfg["experiment"]["output_dir"])
-    baseline_dir = Path(args.baseline_dir) if args.baseline_dir else out_dir / "retrieval_openclip"
-    method_dirs = split_csv(args.method_dirs) or [
-        str(out_dir / "retrieval_openclip" / "consistency_rerank" / "full"),
-        str(out_dir / "retrieval_openclip" / "consistency_rerank_adaptive" / "adaptive"),
-    ]
-    method_names = split_csv(args.method_names) or ["consistency_full", "adaptive"]
-    if len(method_dirs) != len(method_names):
-        raise ValueError("--method-dirs and --method-names must have the same length")
+    baseline_dir = Path(args.baseline_dir)
+    priver_dir = Path(args.priver_dir)
 
     analysis_dir = ensure_dir(out_dir / args.analysis_subdir)
-    baseline = load_metrics(baseline_dir, args.baseline_name)
+    baseline = load_metrics(baseline_dir, "semantic")
     baseline_attrs = add_query_attributes(out_dir, baseline)
 
-    all_metrics = [baseline]
-    for method_dir, method_name in zip(method_dirs, method_names):
-        all_metrics.append(load_metrics(Path(method_dir), method_name))
+    all_metrics = [baseline, load_metrics(priver_dir, "priver")]
     metrics_df = pd.concat(all_metrics, ignore_index=True)
     metrics_df = metrics_df.merge(
         baseline_attrs[
@@ -196,7 +172,7 @@ def main() -> None:
     }
 
     rows = [
-        summarize_subset(metrics_df, name, query_ids, args.baseline_name)
+        summarize_subset(metrics_df, name, query_ids, "semantic")
         for name, query_ids in subset_defs.items()
     ]
     summary_df = pd.DataFrame(rows)
@@ -218,7 +194,7 @@ def main() -> None:
     ]
     summary = {
         "baseline_dir": str(baseline_dir),
-        "method_dirs": method_dirs,
+        "priver_dir": str(priver_dir),
         "num_queries": int(baseline_attrs["query_id"].nunique()),
         "selected_subsets": selected.to_dict(orient="records"),
     }

@@ -4,14 +4,15 @@
 
 - [ ] Confirm all coauthors approve public code release.
 - [ ] Confirm Zhejiang University intellectual-property requirements.
-- [ ] Select and add an open-source license, if release is approved.
-- [x] Create the GitHub repository and add its URL to `README.md` and
-  `CITATION.cff`.
-- [ ] Run the full test and secret audit documented below.
+- [x] Add the MIT open-source license.
+- [x] Create the GitHub repository and add its URL to `README.md`.
+- [x] Run the full test and secret audit documented below.
+- [ ] Add article citation metadata after publication.
+
+## Optional Archival Steps
+
 - [ ] Tag an immutable release, for example `v0.1.0`.
-- [ ] Archive the tagged release with Zenodo and add the DOI.
-- [ ] Replace the manuscript's anonymized code statement after peer
-  review permits repository disclosure.
+- [ ] Archive the tagged release with Zenodo and add the DOI when available.
 
 ## Verification Commands
 

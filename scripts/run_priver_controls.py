@@ -99,7 +99,7 @@ def build_control_conditions(
         ControlCondition("same_scale_only", alpha, 0.0, "full"),
         ControlCondition("inter_scale_only", 0.0, beta, "full"),
         ControlCondition(
-            "all_overlap_smoothing", alpha, beta, "all_overlap"
+            "all_overlap_no_degree", alpha, beta, "all_overlap"
         ),
         ControlCondition(
             "reciprocal_no_degree",

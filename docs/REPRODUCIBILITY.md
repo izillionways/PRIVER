@@ -61,7 +61,8 @@ python scripts/build_prompt_stable_candidates.py \
 ```
 
 This command applies the fixed four-template mean-minus-0.5-standard-
-deviation score. It performs no parameter search.
+deviation score. The retained similarities are clipped at zero before
+candidate-pool min--max normalization. It performs no parameter search.
 
 ## 5. PRIVER and Evaluation
 

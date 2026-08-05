@@ -18,7 +18,7 @@ METHODS = (
     "prompt",
     "same_scale_only",
     "inter_scale_only",
-    "all_overlap_smoothing",
+    "all_overlap_no_degree",
     "reciprocal_no_degree",
     "priver",
 )
@@ -26,7 +26,7 @@ METHOD_LABELS = {
     "prompt": "Prompt only",
     "same_scale_only": "Same-scale only",
     "inter_scale_only": "Inter-scale only",
-    "all_overlap_smoothing": "All-overlap smoothing",
+    "all_overlap_no_degree": "All-overlap support, no degree norm.",
     "reciprocal_no_degree": "Reciprocal, no degree norm.",
     "priver": "PRIVER",
 }

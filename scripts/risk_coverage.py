@@ -69,19 +69,9 @@ def retrieval_confidence_features(row: dict, top_k: int) -> dict:
             "consistency_confidence": 0.0,
         }
 
-    score_key = next(
-        (
-            key
-            for key in (
-                "priver_score",
-                "rerank_score_v3",
-                "rerank_score",
-                "score",
-            )
-            if key in retrieved[0]
-        ),
-        "score",
-    )
+    if "priver_score" not in retrieved[0]:
+        raise ValueError("Expected PRIVER rankings with a priver_score field")
+    score_key = "priver_score"
     scores = [float(item.get(score_key, item.get("score", 0.0))) for item in retrieved]
     sorted_scores = sorted(scores, reverse=True)
     margin = sorted_scores[0] - sorted_scores[1] if len(sorted_scores) > 1 else sorted_scores[0]
@@ -137,7 +127,11 @@ def main() -> None:
     cfg = read_yaml(args.config)
     out_dir = Path(cfg["experiment"]["output_dir"])
     top_k = int(cfg.get("retrieval", {}).get("top_k", 10))
-    retrieval_dir = Path(args.retrieval_dir) if args.retrieval_dir else out_dir / "retrieval_openclip"
+    retrieval_dir = (
+        Path(args.retrieval_dir)
+        if args.retrieval_dir
+        else out_dir / "priver"
+    )
     analysis_dir = ensure_dir(
         Path(args.analysis_dir)
         if args.analysis_dir

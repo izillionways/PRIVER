@@ -69,39 +69,33 @@ def summarize(rows: list[dict], method: str) -> list[dict]:
     return summary
 
 
-def parse_methods(raw: str) -> dict[str, Path]:
-    methods = {}
-    for item in raw.split(","):
-        if not item.strip():
-            continue
-        name, rel_path = item.split(":", 1)
-        methods[name.strip()] = Path(rel_path.strip())
-    return methods
-
-
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Summarize query-template robustness from existing retrieval outputs.")
-    parser.add_argument("--output-dir", type=Path, default=Path("outputs/dota_v15_100"))
-    parser.add_argument("--analysis-dir", type=Path, default=None)
-    parser.add_argument(
-        "--methods",
-        default=(
-            "OpenCLIP:retrieval_openclip/retrieval_metrics.jsonl,"
-            "Full reranking:retrieval_openclip/consistency_rerank/full/retrieval_metrics.jsonl,"
-            "Adaptive reranking:"
-            "retrieval_openclip/consistency_rerank_adaptive/adaptive/retrieval_metrics.jsonl"
-        ),
-        help="Comma-separated method:path entries, with paths relative to output-dir.",
+    parser = argparse.ArgumentParser(
+        description=(
+            "Summarize semantic and PRIVER metrics by controlled query template."
+        )
     )
+    parser.add_argument(
+        "--semantic-dir",
+        type=Path,
+        required=True,
+        help="Directory containing semantic retrieval outputs.",
+    )
+    parser.add_argument(
+        "--priver-dir",
+        type=Path,
+        required=True,
+        help="Directory containing PRIVER retrieval outputs.",
+    )
+    parser.add_argument("--analysis-dir", type=Path, default=None)
     args = parser.parse_args()
 
-    out_dir = args.output_dir
-    analysis_dir = args.analysis_dir or out_dir / "query_template_robustness"
+    analysis_dir = args.analysis_dir or args.priver_dir / "query_template_robustness"
     analysis_dir.mkdir(parents=True, exist_ok=True)
 
     method_paths = {
-        method: out_dir / rel_path
-        for method, rel_path in parse_methods(args.methods).items()
+        "semantic": args.semantic_dir / "retrieval_metrics.jsonl",
+        "priver": args.priver_dir / "retrieval_metrics.jsonl",
     }
 
     rows: list[dict] = []

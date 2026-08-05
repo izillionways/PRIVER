@@ -69,21 +69,19 @@ python scripts/apply_priver.py \
 See [docs/REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md) for the full
 pipeline and dataset layout.
 
-## Frozen Protocol
+## Manuscript Protocol
 
-The published configuration uses 512- and 1024-pixel patches, polygon
+The manuscript configuration uses 512- and 1024-pixel patches, polygon
 coverage for annotation-defined relevance, four semantically equivalent
 query templates, a candidate pool of 100, and a returned list of 10.
-All method choices were selected on the DOTA-v1.5 development split and
-frozen before evaluation on DOTA-v1.5 validation and SODA-A.
-
-## Citation
-
-Citation metadata are provided in `CITATION.cff`. The source repository is
-[izillionways/PRIVER](https://github.com/izillionways/PRIVER). Add the
-article DOI and release archive DOI once they are assigned.
+Prompt-stable similarities are clipped at zero before candidate-pool
+min--max normalization. All method choices were selected on the
+DOTA-v1.5 development split and applied unchanged to the DOTA-v1.5
+internal test and SODA-A external test.
 
 ## License
 
-No open-source license has been selected yet. Until a license file is
-added, reuse is not granted beyond rights provided by applicable law.
+The PRIVER source code, configuration files, documentation, and aggregate
+result tables in this repository are released under the [MIT License](LICENSE).
+DOTA-v1.5, SODA-A, model checkpoints, and other third-party resources remain
+subject to their providers' terms and are not redistributed here.

@@ -8,25 +8,31 @@ from pathlib import Path
 import numpy as np
 
 
-METRICS = ("hit_at_1", "hit_at_10", "precision_at_10", "recall_at_10")
+DEFAULT_METRICS = (
+    "hit_at_1",
+    "precision_at_10",
+    "recall_at_10",
+    "ndcg_at_10",
+)
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Bootstrap confidence intervals for retrieval metrics.")
-    parser.add_argument("--output-dir", default="outputs/dota_v15_100", help="Experiment output directory.")
-    parser.add_argument("--encoder-dir", default="retrieval_openclip", help="Retrieval directory under output-dir.")
-    parser.add_argument("--methods", default="openclip:retrieval_metrics.jsonl,full:consistency_rerank/full/retrieval_metrics.jsonl,adaptive:consistency_rerank_adaptive/adaptive/retrieval_metrics.jsonl")
-    parser.add_argument("--baseline", default="openclip", help="Method used for paired delta CIs.")
+    parser = argparse.ArgumentParser(
+        description=(
+            "Compute source-image cluster-bootstrap intervals for semantic "
+            "and PRIVER retrieval metrics."
+        )
+    )
+    parser.add_argument("--semantic-metrics", required=True)
+    parser.add_argument("--priver-metrics", required=True)
+    parser.add_argument(
+        "--metrics",
+        default=",".join(DEFAULT_METRICS),
+        help="Comma-separated metric fields present in both JSONL files.",
+    )
     parser.add_argument("--n-bootstrap", type=int, default=10000, help="Number of bootstrap samples.")
     parser.add_argument("--seed", type=int, default=42, help="Random seed.")
-    parser.add_argument(
-        "--resample-unit",
-        choices=("query", "image"),
-        default="query",
-        help="Resample individual queries or source-image clusters.",
-    )
-    parser.add_argument("--out-subdir", default="bootstrap_ci", help="Output subdirectory under output-dir.")
-    parser.add_argument("--out-dir", default=None, help="Explicit output directory. Overrides --out-subdir.")
+    parser.add_argument("--out-dir", required=True)
     return parser.parse_args()
 
 
@@ -40,18 +46,9 @@ def read_jsonl(path: Path) -> list[dict]:
     return rows
 
 
-def parse_methods(raw: str) -> dict[str, str]:
-    methods = {}
-    for item in raw.split(","):
-        if not item.strip():
-            continue
-        name, rel_path = item.split(":", 1)
-        methods[name.strip()] = rel_path.strip()
-    return methods
-
-
 def align_by_query(
     method_rows: dict[str, list[dict]],
+    metrics: tuple[str, ...],
 ) -> tuple[list[str], list[str], dict[str, dict[str, np.ndarray]]]:
     query_sets = [set(row["query_id"] for row in rows) for rows in method_rows.values()]
     shared_query_ids = sorted(set.intersection(*query_sets))
@@ -66,7 +63,7 @@ def align_by_query(
         by_query = {row["query_id"]: row for row in rows}
         aligned[method] = {
             metric: np.asarray([float(by_query[q][metric]) for q in shared_query_ids], dtype=float)
-            for metric in METRICS
+            for metric in metrics
         }
     return shared_query_ids, image_ids, aligned
 
@@ -76,15 +73,7 @@ def bootstrap_means(
     image_ids: list[str],
     n_bootstrap: int,
     rng: np.random.Generator,
-    resample_unit: str,
 ) -> np.ndarray:
-    if resample_unit == "query":
-        boot = np.empty(n_bootstrap, dtype=float)
-        for index in range(n_bootstrap):
-            sampled_indices = rng.integers(0, len(values), size=len(values))
-            boot[index] = values[sampled_indices].mean()
-        return boot
-
     unique_images = sorted(set(image_ids))
     image_array = np.asarray(image_ids)
     image_sums = np.asarray(
@@ -114,26 +103,29 @@ def ci(values: np.ndarray) -> tuple[float, float]:
 
 def main() -> None:
     args = parse_args()
-    output_dir = Path(args.output_dir)
-    retrieval_dir = output_dir / args.encoder_dir
-    out_dir = Path(args.out_dir) if args.out_dir else output_dir / args.out_subdir
+    out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    method_paths = parse_methods(args.methods)
-    method_rows = {
-        method: read_jsonl(retrieval_dir / rel_path)
-        for method, rel_path in method_paths.items()
+    metrics = tuple(item.strip() for item in args.metrics.split(",") if item.strip())
+    if not metrics:
+        raise ValueError("--metrics must contain at least one field")
+    method_paths = {
+        "semantic": Path(args.semantic_metrics),
+        "priver": Path(args.priver_metrics),
     }
-    query_ids, image_ids, aligned = align_by_query(method_rows)
+    method_rows = {
+        method: read_jsonl(path) for method, path in method_paths.items()
+    }
+    query_ids, image_ids, aligned = align_by_query(method_rows, metrics)
     n = len(query_ids)
     rng = np.random.default_rng(args.seed)
 
     rows = []
     for method in method_paths:
-        for metric in METRICS:
+        for metric in metrics:
             values = aligned[method][metric]
             boot = bootstrap_means(
-                values, image_ids, args.n_bootstrap, rng, args.resample_unit
+                values, image_ids, args.n_bootstrap, rng
             )
             low, high = ci(boot)
             rows.append({
@@ -148,15 +140,15 @@ def main() -> None:
                 "delta_ci95_high": "",
             })
 
-            if method != args.baseline:
-                delta_values = values - aligned[args.baseline][metric]
+            if method != "semantic":
+                delta_values = values - aligned["semantic"][metric]
                 delta_boot = bootstrap_means(
-                    delta_values, image_ids, args.n_bootstrap, rng, args.resample_unit
+                    delta_values, image_ids, args.n_bootstrap, rng
                 )
                 delta_low, delta_high = ci(delta_boot)
                 rows.append({
                     "method": method,
-                    "metric": f"delta_{metric}_vs_{args.baseline}",
+                    "metric": f"delta_{metric}_vs_semantic",
                     "num_queries": n,
                     "mean": "",
                     "ci95_low": "",
@@ -166,26 +158,26 @@ def main() -> None:
                     "delta_ci95_high": delta_high,
                 })
 
-    experiment_name = output_dir.name
-    csv_path = out_dir / f"{experiment_name}_{args.encoder_dir}_bootstrap_ci.csv"
+    csv_path = out_dir / "bootstrap_ci.csv"
     with csv_path.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(handle, fieldnames=list(rows[0].keys()))
         writer.writeheader()
         writer.writerows(rows)
 
-    summary_path = out_dir / f"{experiment_name}_{args.encoder_dir}_bootstrap_ci_summary.json"
+    summary_path = out_dir / "bootstrap_ci_summary.json"
     summary_path.write_text(
         json.dumps(
             {
-                "encoder_dir": args.encoder_dir,
-                "experiment_name": experiment_name,
-                "methods": method_paths,
-                "baseline": args.baseline,
+                "methods": {
+                    method: str(path) for method, path in method_paths.items()
+                },
+                "baseline": "semantic",
+                "metrics": metrics,
                 "num_queries": n,
                 "num_images": len(set(image_ids)),
                 "n_bootstrap": args.n_bootstrap,
                 "seed": args.seed,
-                "resample_unit": args.resample_unit,
+                "resample_unit": "source_image",
                 "csv": str(csv_path),
             },
             indent=2,
@@ -197,7 +189,7 @@ def main() -> None:
         "num_queries": n,
         "num_images": len(set(image_ids)),
         "n_bootstrap": args.n_bootstrap,
-        "resample_unit": args.resample_unit,
+        "resample_unit": "source_image",
     }, indent=2))
 
 

@@ -13,9 +13,13 @@ SPEC.loader.exec_module(MODULE)
 class RiskCoverageTests(unittest.TestCase):
     def test_confidence_features_use_only_final_top_k_results(self):
         retrieved = [
-            {"score": 2.0, "bbox": [0, 0, 10, 10], "patch_size": 512},
-            {"score": 1.0, "bbox": [1, 1, 11, 11], "patch_size": 1024},
-            {"score": -100.0, "bbox": [1000, 1000, 1010, 1010], "patch_size": 512},
+            {"priver_score": 2.0, "bbox": [0, 0, 10, 10], "patch_size": 512},
+            {"priver_score": 1.0, "bbox": [1, 1, 11, 11], "patch_size": 1024},
+            {
+                "priver_score": -100.0,
+                "bbox": [1000, 1000, 1010, 1010],
+                "patch_size": 512,
+            },
         ]
         row = {"retrieved": retrieved}
 
