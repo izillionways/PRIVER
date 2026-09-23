@@ -1,0 +1,7 @@
+Encoder,Method,P@10,nDCG@10,Object R@10
+OpenCLIP,Semantic ranking,0.567,0.647,0.773
+,PRIVER,\textbf{0.625},\textbf{0.730},\textbf{0.873}
+GeoRSCLIP,Semantic ranking,0.558,0.633,0.757
+,PRIVER,\textbf{0.605},\textbf{0.710},\textbf{0.850}
+RemoteCLIP,Semantic ranking,0.609,0.712,0.833
+,PRIVER,\textbf{0.674},\textbf{0.807},\textbf{0.920}

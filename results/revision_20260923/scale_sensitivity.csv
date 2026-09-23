@@ -1,0 +1,7 @@
+Method,P@10,nDCG@10,Object R@10,P@10,nDCG@10,Object R@10
+Prompt only (512-pixel only),0.507,0.558,\textbf{0.735},0.385,\textbf{0.420},\textbf{0.428}
+PRIVER (512-pixel only),\textbf{0.508},\textbf{0.559},0.730,\textbf{0.386},0.419,0.422
+Prompt only (1024-pixel only),\textbf{0.672},\textbf{0.508},\textbf{0.897},0.467,0.501,\textbf{0.692}
+PRIVER (1024-pixel only),\textbf{0.672},0.507,0.894,\textbf{0.469},\textbf{0.502},0.680
+Prompt only (512/1024),0.581,0.665,0.785,0.423,0.456,0.473
+PRIVER (512/1024),\textbf{0.625},\textbf{0.730},\textbf{0.873},\textbf{0.502},\textbf{0.550},\textbf{0.681}

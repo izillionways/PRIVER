@@ -1,0 +1,8 @@
+Method,P@10,nDCG@10,Object R@10,P@10,nDCG@10,Object R@10
+Prompt only,0.581,0.665,0.785,0.423,0.456,0.473
+Static 1024-pixel prior,0.615,0.712,\textbf{0.881},0.470,0.503,0.658
+Rank-wise scale-matched semantic,0.617,0.716,0.867,0.479,0.512,0.645
+Permuted inter-scale support,0.598,0.689,0.858,0.450,0.476,0.626
+Prompt only (alternating scale quota),0.605,0.690,0.832,0.459,0.488,0.561
+PRIVER (alternating scale quota),0.615,0.702,0.832,0.476,0.505,0.559
+PRIVER,\textbf{0.625},\textbf{0.730},0.873,\textbf{0.502},\textbf{0.550},\textbf{0.681}

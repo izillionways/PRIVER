@@ -1,0 +1,5 @@
+Dataset,Method,H@1,P@5,R@5,nDCG@5,Object R@5,P@10,R@10,nDCG@10,Object R@10
+DOTA-v1.5,Semantic ranking,0.656,0.603,0.330,0.632,0.649,0.567,0.512,0.647,0.773
+,PRIVER,\textbf{0.756},\textbf{0.687},\textbf{0.381},\textbf{0.725},\textbf{0.790},\textbf{0.625},\textbf{0.570},\textbf{0.730},\textbf{0.873}
+SODA-A,Semantic ranking,0.479,0.438,0.099,0.450,0.317,0.414,0.177,0.445,0.467
+,PRIVER,\textbf{0.601},\textbf{0.535},\textbf{0.135},\textbf{0.557},\textbf{0.512},\textbf{0.502},\textbf{0.236},\textbf{0.550},\textbf{0.681}

@@ -10,6 +10,21 @@ This repository contains the implementation and compact result tables
 for the accompanying manuscript. It does not distribute DOTA-v1.5,
 SODA-A, model checkpoints, or cached image features.
 
+## Revised Manuscript Release
+
+Use [v1.1.0](https://github.com/izillionways/PRIVER/releases/tag/v1.1.0)
+for the revised manuscript. Pass `configs/priver_revision_20260916.json`
+explicitly: same-scale weight 0.10, inter-scale weight 1.25, and candidate
+budget 100. The core algorithm is unchanged. `priver_frozen.json`, CLI
+defaults, and `results/tables/` retain the original submission settings
+and results; they must not be confused with the revision.
+
+Revision table sources are in `results/revision_20260923/`. The release
+asset includes analysis scripts, development records, numeric results,
+and saved detector predictions for result inspection and replay.
+See [revision reproduction notes](docs/REVISION_20260923.md) for the
+available reproduction levels and required external inputs.
+
 ## Repository Layout
 
 - `src/priver/`: reusable indexing, geometry, retrieval, evaluation, and
@@ -62,7 +77,7 @@ query feature caches, then run the frozen reranker:
 python scripts/apply_priver.py \
   --dataset-config configs/dota_v15_val_458_ck200.yaml \
   --retrieval-dir outputs/dota_v15_val_458/retrieval_prompt_stable \
-  --priver-config configs/priver_frozen.json \
+  --priver-config configs/priver_revision_20260916.json \
   --out-dir outputs/dota_v15_val_458/priver
 ```
 
@@ -77,7 +92,12 @@ query templates, a candidate pool of 100, and a returned list of 10.
 Prompt-stable similarities are clipped at zero before candidate-pool
 min--max normalization. All method choices were selected on the
 DOTA-v1.5 development split and applied unchanged to the DOTA-v1.5
-internal test and SODA-A external test.
+internal test and SODA-A holdout. The revision re-evaluates these previously
+used sets and adds a fixed confirmation on 1,067 previously unused SODA-A
+images. Inter-scale support supplies the main gain; independent effects
+of same-scale support and reciprocity are limited, and large-window
+preference remains. The results do not establish free-form query
+understanding or missing-class rejection.
 
 ## License
 

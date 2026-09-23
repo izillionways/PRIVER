@@ -1,0 +1,6 @@
+Method,P@10,nDCG@10,Object R@10,P@10,nDCG@10,Object R@10
+Semantic ranking (mean over prompts),0.576,0.658,0.782,0.426,0.458,0.482
+Prompt only ($\mu-0.5\sigma$),0.581,0.665,0.785,0.423,0.456,0.473
+"Graph only (mean, fixed pool)",0.623,0.726,\textbf{0.877},\textbf{0.503},\textbf{0.551},\textbf{0.693}
+"Graph only (mean, reselected pool)",0.623,0.726,0.874,\textbf{0.503},\textbf{0.551},0.687
+PRIVER,\textbf{0.625},\textbf{0.730},0.873,0.502,0.550,0.681

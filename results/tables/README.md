@@ -1,5 +1,8 @@
 # Result Table Manifest
 
+These are historical original-submission results. For the revised
+manuscript use `../revision_20260923/` and release v1.1.0.
+
 These CSV files are compact, immutable source data for the manuscript's
 reported tables and figures. They contain aggregate results only, not
 raw images, annotations, model features, or participant data.

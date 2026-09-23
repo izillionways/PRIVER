@@ -1,0 +1,11 @@
+Method,P@10,nDCG@10,Object R@10
+Semantic ranking,0.4334,0.4649,0.4714
+Prompt only,0.4483,0.4816,0.4897
+Diffusion (development-selected),0.4578,0.4869,0.4681
+Diffusion (author-default),0.3408,0.3615,0.2866
+$k$-reciprocal (development-selected),0.4483,0.4816,0.4897
+$k$-reciprocal (author-default),0.4502,0.4785,0.4536
+Full rank-wise scale-matched semantic,0.4944,0.5272,0.6479
+Joint rank-wise scale-matched semantic,0.4950,0.5276,0.6495
+Joint removal,0.5190,0.5646,0.6893
+PRIVER,0.5194,0.5647,0.6824

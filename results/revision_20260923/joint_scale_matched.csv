@@ -1,0 +1,5 @@
+Condition,$\Delta$P@10,$\Delta$nDCG@10,$\Delta$Object R@10
+DOTA / OpenCLIP,"\shortstack[r]{+0.0076\\{}[+0.0042, +0.0109]}","\shortstack[r]{+0.0139\\{}[+0.0089, +0.0188]}","\shortstack[r]{+0.0075\\{}[+0.0010, +0.0142]}"
+SODA-A / OpenCLIP,"\shortstack[r]{+0.0214\\{}[+0.0163, +0.0266]}","\shortstack[r]{+0.0361\\{}[+0.0292, +0.0430]}","\shortstack[r]{+0.0412\\{}[+0.0262, +0.0559]}"
+DOTA / GeoRSCLIP,"\shortstack[r]{+0.0038\\{}[+0.0004, +0.0072]}","\shortstack[r]{+0.0018\\{}[-0.0030, +0.0066]}","\shortstack[r]{-0.0028\\{}[-0.0122, +0.0068]}"
+DOTA / RemoteCLIP,"\shortstack[r]{+0.0121\\{}[+0.0087, +0.0154]}","\shortstack[r]{+0.0178\\{}[+0.0130, +0.0227]}","\shortstack[r]{+0.0108\\{}[+0.0028, +0.0192]}"

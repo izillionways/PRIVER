@@ -1,0 +1,7 @@
+Method,P@10,nDCG@10,Object R@10,P@10,nDCG@10,Object R@10
+Prompt only,0.581,0.665,0.785,0.423,0.456,0.473
+Diffusion (development-selected),0.586,0.656,0.762,0.431,0.456,0.457
+Diffusion (author-default),0.519,0.576,0.682,0.335,0.353,0.284
+$k$-reciprocal (development-selected),0.581,0.665,0.785,0.423,0.456,0.473
+$k$-reciprocal (author-default),0.574,0.647,0.743,0.430,0.458,0.440
+PRIVER,\textbf{0.625},\textbf{0.730},\textbf{0.873},\textbf{0.502},\textbf{0.550},\textbf{0.681}

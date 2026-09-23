@@ -1,5 +1,10 @@
 # Reproducibility Guide
 
+For the revised manuscript, use release v1.1.0 and read
+[the revision notes](REVISION_20260923.md). The historical configuration
+and old tables remain available for comparison; use the revision config
+explicitly for the revised results.
+
 ## 1. Dataset Layout
 
 Download DOTA-v1.5 and SODA-A from their official distribution channels.
@@ -56,7 +61,7 @@ python scripts/build_prompt_stable_candidates.py \
   --dataset-config <dataset-config> \
   --patch-features <patch-cache.npz> \
   --query-features <query-cache.npz> \
-  --priver-config configs/priver_frozen.json \
+  --priver-config configs/priver_revision_20260916.json \
   --out-dir <prompt-output>
 ```
 
@@ -70,7 +75,7 @@ candidate-pool min--max normalization. It performs no parameter search.
 python scripts/apply_priver.py \
   --dataset-config <dataset-config> \
   --retrieval-dir <prompt-output> \
-  --priver-config configs/priver_frozen.json \
+  --priver-config configs/priver_revision_20260916.json \
   --out-dir <priver-output>
 ```
 
@@ -79,7 +84,8 @@ support kernels, reciprocal-neighbor count, degree normalization, and
 support weights. Do not tune it on either test set.
 
 Compact source tables used by the manuscript are under
-`results/tables/`. Confidence intervals use source-image cluster
+`results/revision_20260923/` (original submission tables remain under
+`results/tables/`). Confidence intervals use source-image cluster
 bootstrap resampling rather than treating four prompt variants as
 independent samples.
 

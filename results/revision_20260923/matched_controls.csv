@@ -1,0 +1,9 @@
+Method,P@10,nDCG@10,Object R@10,P@10,nDCG@10,Object R@10
+Prompt only,0.581,0.665,0.785,0.423,0.456,0.473
+Same-scale only,0.582,0.665,0.777,0.425,0.457,0.466
+Inter-scale only,0.624,\textbf{0.730},\textbf{0.875},0.502,0.549,\textbf{0.687}
+All-overlap (no degree norm.),0.622,0.724,0.860,\textbf{0.505},\textbf{0.550},0.661
+All-overlap (degree norm.),\textbf{0.625},\textbf{0.730},0.873,0.502,\textbf{0.550},0.681
+Reciprocal (no degree norm.),0.621,0.723,0.860,\textbf{0.505},\textbf{0.550},0.663
+Joint removal,0.624,0.729,0.874,0.502,0.549,\textbf{0.687}
+PRIVER,\textbf{0.625},\textbf{0.730},0.873,0.502,\textbf{0.550},0.681

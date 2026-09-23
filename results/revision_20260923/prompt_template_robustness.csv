@@ -1,0 +1,6 @@
+Template or method,DOTA-v1.5 P@10,SODA-A P@10
+Semantic ranking ($t_0$),0.553,0.397
+Semantic ranking ($t_1$),0.577,0.439
+Semantic ranking ($t_2$),0.579,0.413
+Semantic ranking ($t_3$),0.559,0.408
+PRIVER (all four templates),\textbf{0.625},\textbf{0.502}

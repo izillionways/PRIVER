@@ -1,0 +1,11 @@
+Tiling condition,Method,P@10,nDCG@10,Object R@10,P@10,nDCG@10,Object R@10
+"\multirow{2}{*}{\shortstack[l]{Original\\(512/1024, 25\%)}}",Prompt only,0.601,0.675,0.835,0.461,0.490,0.490
+,PRIVER,\textbf{0.654},\textbf{0.756},\textbf{0.941},\textbf{0.539},\textbf{0.591},\textbf{0.723}
+"\multirow{2}{*}{\shortstack[l]{No overlap\\(512/1024, 0\%)}}",Prompt only,0.581,0.683,0.831,0.432,0.491,0.482
+,PRIVER,\textbf{0.612},\textbf{0.753},\textbf{0.911},\textbf{0.482},\textbf{0.563},\textbf{0.789}
+"\multirow{2}{*}{\shortstack[l]{Smaller windows\\(384/768, 25\%)}}",Prompt only,0.548,0.612,0.732,0.432,0.467,0.424
+,PRIVER,\textbf{0.612},\textbf{0.697},\textbf{0.893},\textbf{0.500},\textbf{0.541},\textbf{0.559}
+"\multirow{2}{*}{\shortstack[l]{Shifted origin\\(512/1024, 25\%)}}",Prompt only,0.609,0.669,0.816,0.448,0.470,0.489
+,PRIVER,\textbf{0.673},\textbf{0.748},\textbf{0.905},\textbf{0.525},\textbf{0.563},\textbf{0.644}
+"\multirow{2}{*}{\shortstack[l]{Non-2:1 scales\\(512/768, 25\%)}}",Prompt only,0.593,0.668,0.793,0.459,0.496,0.492
+,PRIVER,\textbf{0.628},\textbf{0.711},\textbf{0.871},\textbf{0.495},\textbf{0.535},\textbf{0.549}
