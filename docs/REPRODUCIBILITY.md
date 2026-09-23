@@ -1,6 +1,6 @@
 # Reproducibility Guide
 
-For the revised manuscript, use release v1.1.1 and read
+For the revised manuscript, use release v1.1.2 and read
 [the revision notes](REVISION_20260923.md). The historical configuration
 and old tables remain available for comparison; use the revision config
 explicitly for the revised results.

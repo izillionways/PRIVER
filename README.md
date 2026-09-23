@@ -12,7 +12,7 @@ SODA-A, model checkpoints, or cached image features.
 
 ## Revised Manuscript Release
 
-Use [v1.1.1](https://github.com/izillionways/PRIVER/releases/tag/v1.1.1)
+Use [v1.1.2](https://github.com/izillionways/PRIVER/releases/tag/v1.1.2)
 for the revised manuscript. Pass `configs/priver_revision_20260916.json`
 explicitly: same-scale weight 0.10, inter-scale weight 1.25, and candidate
 budget 100. The core algorithm is unchanged. `priver_frozen.json`, CLI
